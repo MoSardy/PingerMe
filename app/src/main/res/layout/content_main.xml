@@ -14,74 +14,135 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:ignore="UselessParent">
+        tools:ignore="UselessParent"
+        android:weightSum="10"
+        android:layout_below="@+id/imageViewlogo"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true">
 
-        <ImageView
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="231dp"
-            app:srcCompat="@drawable/wargasmlogo"
-            android:id="@+id/imageViewBanner"
-            android:scaleType="fitStart"
-            tools:ignore="ContentDescription" />
+            android:layout_height="match_parent">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:baselineAligned="false"
-            tools:ignore="ObsoleteLayoutParam,UselessParent"
-            android:layout_margin="10dp"
-            android:padding="5dp">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                tools:ignore="UselessLeaf"
+                android:background="@drawable/pgchatsm"
+                android:layout_marginLeft="60dp"
+                android:padding="10dp"
+                android:layout_marginRight="20dp">
 
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                <TextView
+                    android:text="Tap on play to start."
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvGirlmsg"
+                    android:gravity="center_horizontal"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@android:color/darker_gray"
-                android:id="@+id/rlScore">
+                tools:ignore="InefficientWeight,ObsoleteLayoutParam"
+                android:layout_marginTop="20dp">
 
-                <TextView
-                    android:text="0."
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/tvScore"
-                    android:layout_weight="1"
-                    android:textAppearance="@style/TextAppearance.AppCompat"
-                    android:textSize="50dp"
-                    android:padding="10dp"
-                    tools:ignore="HardcodedText,ObsoleteLayoutParam,SpUsage" />
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="194dp"
+                    app:srcCompat="@drawable/pphappysm"
+                    android:id="@+id/imageViewGirl"
+                    tools:ignore="ContentDescription"
+                    android:background="@null"
+                    android:scaleType="fitStart" />
 
-                <TextView
-                    android:text="Last Score : 0"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/tvLastScore"
-                    android:padding="10dp"
-                    tools:ignore="HardcodedText"
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="89dp"
                     android:layout_alignParentTop="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true" />
-
-                <TextView
-                    android:text="Time : 10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/tvTimeLeft"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:baselineAligned="false"
+                    tools:ignore="ObsoleteLayoutParam,UselessParent"
                     android:padding="5dp"
-                    android:textAppearance="@style/TextAppearance.AppCompat"
-                    android:textSize="25sp"
-                    android:textStyle="normal|bold"
-                    tools:ignore="HardcodedText"
-                    android:layout_alignBottom="@+id/tvScore"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_below="@+id/tvLastScore" />
-            </RelativeLayout>
+                    android:background="@drawable/dashbordbg2"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:id="@+id/lldashbord">
 
-        </LinearLayout>
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:id="@+id/rlScore">
+
+                        <TextView
+                            android:text="0."
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tvScore"
+                            android:layout_weight="1"
+                            android:textAppearance="@style/TextAppearance.AppCompat"
+                            android:textSize="40dp"
+                            android:padding="10dp"
+                            tools:ignore="HardcodedText,ObsoleteLayoutParam,SpUsage"
+                            android:gravity="center_vertical|center_horizontal" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true">
+
+                        <TextView
+                            android:text="Last Score : 0"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tvLastScore"
+                            tools:ignore="HardcodedText"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true" />
+
+                            <TextView
+                                android:text="@string/high_score_0"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/tvHighScore"
+                                android:textStyle="normal|bold"
+                                android:layout_centerVertical="true"
+                                android:layout_alignRight="@+id/tvTimeLeft"
+                                android:layout_alignEnd="@+id/tvTimeLeft" />
+
+                        <TextView
+                            android:text="Time : 10"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tvTimeLeft"
+                            android:textAppearance="@style/TextAppearance.AppCompat"
+                            android:textSize="20sp"
+                            android:textStyle="normal|bold"
+                            tools:ignore="HardcodedText"
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignLeft="@+id/tvLastScore"
+                            android:layout_alignStart="@+id/tvLastScore"
+                            android:padding="5dp" />
+
+
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </RelativeLayout>
+
     </LinearLayout>
 
 </RelativeLayout>
