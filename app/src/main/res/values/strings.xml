@@ -6,4 +6,6 @@
 
     <string name="action_settings">Settings</string>
     <string name="high_score_0">High Score : 0</string>
+
+    <string name="facebook_app_id">1795040730709899</string>
 </resources>

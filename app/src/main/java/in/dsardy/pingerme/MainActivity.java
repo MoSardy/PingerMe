@@ -1,35 +1,38 @@
 package in.dsardy.pingerme;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.Gravity;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.ViewAnimator;
+
+
+import com.github.florent37.viewanimator.AnimationListener;
+
+import rb.popview.PopField;
 
 import static android.R.drawable.ic_media_play;
-import static in.dsardy.pingerme.R.drawable.dashbordbg3;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,SensorEventListener {
@@ -37,19 +40,27 @@ public class MainActivity extends AppCompatActivity
     DrawerLayout drawer;
     ImageView girl;
     FloatingActionButton fab,fab2;
-    LinearLayout Dashboard;
-    TextView TVtimeLeft,TVgirlMsg , TVscore, TVhighscore , TVlastscore;
-    Boolean isPlaying,isGirlok,highScoreChangeDone;
+    LinearLayout Dashboard,Girlmsg;
+    TextView TVtimeLeft,TVgirlMsg , TVscore, TVhighscore , TVlastscore, TVscore2;
+    Boolean isPlaying,isGirlok,highScoreChangeDone,ya;
     private SensorManager mSensorManager;
     private Sensor mSensor;
     int score;
     CountDownTimer ct,mct;
     int TimerValue;
+    PopField popField;
+
+
+
+
+
 
     SharedPreferences sharedpreferences;
     SharedPreferences.Editor editor;
     public static final String gamePref = "GamePref";
     public static final String gameType = "GameType";
+    public static final String isReg = "isRegistered";
+
 
     public static final String lastScore = "LastScore";
     public static final String highScore = "HighScore";
@@ -67,11 +78,31 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        //sharedpref setup
+        sharedpreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sharedpreferences.edit();
+
+        if(sharedpreferences.getInt(isReg,0)==0){
+            finish();
+            startActivity(new Intent(this,Register.class));
+        }
+
+        editor.putInt(gameType,0);
+        editor.commit();
+
+
         isPlaying = false;
         isGirlok = false;
         highScoreChangeDone = false;
         TimerValue = 10;
+
+
+        setContentView(R.layout.activity_main);
+        popField = PopField.attach2Window(this);
+
+        //keep screen on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 
 
@@ -83,9 +114,27 @@ public class MainActivity extends AppCompatActivity
         getUIref();
 
 
-        //sharedpref setup
-        sharedpreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        editor = sharedpreferences.edit();
+
+        girl.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                if(motionEvent.getAction()== MotionEvent.ACTION_DOWN){
+                    girl.setImageResource(R.drawable.pphappysm2);
+                    TVgirlMsg.setText("I love you too :)");
+
+                }
+                if(motionEvent.getAction()==MotionEvent.ACTION_UP){
+                    girl.setImageResource(R.drawable.pphappysm);
+                    TVgirlMsg.setText("You Can Score much Better!");
+
+                }
+                return true;
+            }
+        });
+
+
+
         TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore,0));
         TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore,0));
 
@@ -95,7 +144,7 @@ public class MainActivity extends AppCompatActivity
         editor.putInt(gameType,0);
 
 
-
+        com.github.florent37.viewanimator.ViewAnimator.animate(fab).translationX(-200,0).alpha(0,1).accelerate().duration(1000).thenAnimate(fab).tada().duration(1000).thenAnimate(Girlmsg).tada().descelerate().duration(1000).start();
 
 
         fab2.setOnClickListener(new View.OnClickListener() {
@@ -108,15 +157,18 @@ public class MainActivity extends AppCompatActivity
 
 
 
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
 
                 if(isPlaying==false){
                     isPlaying = true;
                     fab.setImageResource(R.drawable.ic_pause_black_24dp);
                     Dashboard.setBackgroundResource(R.drawable.dashbordbg3sm);
                     TVtimeLeft.setTextColor(Color.WHITE);
+                    com.github.florent37.viewanimator.ViewAnimator.animate(TVtimeLeft).tada().descelerate().duration(2000).start();
                     TVhighscore.setTextColor(Color.BLACK);
 
                     if(sharedpreferences.getInt(gameType,0)==2){
@@ -137,6 +189,9 @@ public class MainActivity extends AppCompatActivity
                                 isPlaying=false;
                                 Dashboard.setBackgroundResource(R.drawable.dashbordbg2);
                                 TVtimeLeft.setText("Time : "+3);
+                                com.github.florent37.viewanimator.ViewAnimator.animate(fab2).fall().descelerate().duration(1500).start();
+                                com.github.florent37.viewanimator.ViewAnimator.animate(Girlmsg).flash().descelerate().duration(1000).start();
+
                                 TVtimeLeft.setTextColor(Color.BLACK);
                                 TVgirlMsg.setText("your fingers getting stronger");
                                 fab.setImageResource(ic_media_play);
@@ -149,9 +204,13 @@ public class MainActivity extends AppCompatActivity
                                 }
                                 editor.apply();
                                 TVscore.setText("0.");
+
                                 TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore2,0));
                                 TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore2,0));
+                                animateScore2();
+
                                 score=0;
+
 
                             }
                         }.start();
@@ -188,6 +247,12 @@ public class MainActivity extends AppCompatActivity
                                     TVscore.setText("0.");
                                     TVgirlMsg.setText("Try Hard next time !");
 
+                                    com.github.florent37.viewanimator.ViewAnimator.animate(Girlmsg).flash().descelerate().duration(1000).start();
+                                    com.github.florent37.viewanimator.ViewAnimator.animate(fab2).fall().descelerate().duration(2000).start();
+
+
+
+
                                     TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore,0));
                                     TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore,0));
 
@@ -199,6 +264,9 @@ public class MainActivity extends AppCompatActivity
                                     editor.apply();
                                     TVscore.setText("0.");
                                     TVgirlMsg.setText("Damn! Try Harder next time !");
+                                    com.github.florent37.viewanimator.ViewAnimator.animate(fab2).fall().descelerate().duration(1500).start();
+                                    com.github.florent37.viewanimator.ViewAnimator.animate(Girlmsg).flash().descelerate().duration(1000).start();
+
 
                                     TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore1,0));
                                     TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore1,0));
@@ -206,6 +274,7 @@ public class MainActivity extends AppCompatActivity
 
 
                                 //score
+                                animateScore2();
                                 score=0;
 
 
@@ -239,9 +308,14 @@ public class MainActivity extends AppCompatActivity
                         editor.apply();
 
                         //score
+                        animateScore2();
+
                         score=0;
                         TVscore.setText("0.");
                         TVgirlMsg.setText("do Complete the challenge boi !");
+                        com.github.florent37.viewanimator.ViewAnimator.animate(fab2).fall().descelerate().duration(1500).start();
+                        com.github.florent37.viewanimator.ViewAnimator.animate(Girlmsg).flash().descelerate().duration(1000).start();
+
 
                         TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore,0));
                         TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore,0));
@@ -256,9 +330,13 @@ public class MainActivity extends AppCompatActivity
                         editor.apply();
 
                         //score
+                        animateScore2();
                         score=0;
                         TVscore.setText("0.");
                         TVgirlMsg.setText("haha!running away. See leaderboard");
+                        com.github.florent37.viewanimator.ViewAnimator.animate(fab2).fall().descelerate().duration(1500).start();
+                        com.github.florent37.viewanimator.ViewAnimator.animate(Girlmsg).flash().descelerate().duration(1000).start();
+
 
                         TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore1,0));
                         TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore1,0));
@@ -275,6 +353,9 @@ public class MainActivity extends AppCompatActivity
                         score=0;
                         TVscore.setText("0.");
                         TVgirlMsg.setText("its ok! This is Real mans stuff :)");
+                        com.github.florent37.viewanimator.ViewAnimator.animate(fab2).fall().descelerate().duration(1500).start();
+                        com.github.florent37.viewanimator.ViewAnimator.animate(Girlmsg).flash().descelerate().duration(1000).start();
+
 
                         TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore2,0));
                         TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore2,0));
@@ -289,6 +370,11 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+
+
+
+
+
 
     @Override
     protected void onResume() {
@@ -310,13 +396,27 @@ public class MainActivity extends AppCompatActivity
         TVgirlMsg = (TextView)findViewById(R.id.tvGirlmsg);
         girl = (ImageView)findViewById(R.id.imageViewGirl);
         TVscore = (TextView)findViewById(R.id.tvScore);
+        TVscore2 = (TextView)findViewById(R.id.textViewScore2);
         TVhighscore = (TextView)findViewById(R.id.tvHighScore);
         TVlastscore = (TextView)findViewById(R.id.tvLastScore);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        Girlmsg = (LinearLayout)findViewById(R.id.llGirlmsg);
 
 
 
+    }
+
+    public void animateScore2(){
+
+        TVscore2.setText(""+score);
+        TVscore2.setVisibility(View.VISIBLE);
+        com.github.florent37.viewanimator.ViewAnimator.animate(TVscore2).translationX(-100,0).alpha(0,1).descelerate().duration(500).thenAnimate(TVscore2).tada().duration(1000).thenAnimate(TVscore2).alpha(1,0).duration(1000).onStop(new AnimationListener.Stop() {
+            @Override
+            public void onStop() {
+                TVscore2.setVisibility(View.GONE);
+            }
+        }).start();
     }
 
     @Override
@@ -362,6 +462,7 @@ public class MainActivity extends AppCompatActivity
             TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore,0));
             TimerValue=10;
             TVtimeLeft.setText("Time : " +10);
+            com.github.florent37.viewanimator.ViewAnimator.animate(TVtimeLeft).tada().duration(1000).start();
             highScoreChangeDone = false;
             editor.putInt(gameType,0).commit();
             TVgirlMsg.setText("Check LeaderBoard!");
@@ -372,6 +473,8 @@ public class MainActivity extends AppCompatActivity
             TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore1,0));
             TimerValue=30;
             TVtimeLeft.setText("Time : " +30);
+            com.github.florent37.viewanimator.ViewAnimator.animate(TVtimeLeft).tada().duration(1000).start();
+
             highScoreChangeDone = false;
             editor.putInt(gameType,1).commit();
             TVgirlMsg.setText("Challenge a friend ! its fun ;)");
@@ -382,6 +485,8 @@ public class MainActivity extends AppCompatActivity
             TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore2,0));
             TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore2,0));
             TVtimeLeft.setText("Time : " +3);
+            com.github.florent37.viewanimator.ViewAnimator.animate(TVtimeLeft).tada().duration(1000).start();
+
             highScoreChangeDone = false;
             TimerValue=3;
             TVgirlMsg.setText("here is No Timer honey! start it ;)");
@@ -408,6 +513,8 @@ public class MainActivity extends AppCompatActivity
 
         if(isPlaying){
 
+
+
         if(isGirlok==true){
             girl.setImageResource(R.drawable.ppsadsm);
             isGirlok=false;
@@ -417,6 +524,14 @@ public class MainActivity extends AppCompatActivity
         }
             score++;
             TVscore.setText(score +".");
+
+            if(score==1){
+                if(isGirlok==false && sensorEvent.values[0]==5){
+                    girl.setImageResource(R.drawable.pphappysm);
+                    isGirlok=true;
+                }
+
+            }
 
             switch (sharedpreferences.getInt(gameType,0)){
                 case 0:{
@@ -429,6 +544,8 @@ public class MainActivity extends AppCompatActivity
                         TVhighscore.setText("High Score : "+score);
                         if(highScoreChangeDone){
                             TVhighscore.setTextColor(Color.WHITE);
+                            TVgirlMsg.setText("Damn! Its a new High Score!");
+
                             Dashboard.setBackgroundResource(R.drawable.dashbordbg4sm);
                         }
                         highScoreChangeDone = true;
@@ -447,6 +564,8 @@ public class MainActivity extends AppCompatActivity
                     if(score>sharedpreferences.getInt(highScore1,0)){
                         TVhighscore.setText("High Score : "+score);
                         if(highScoreChangeDone){
+                            TVgirlMsg.setText("AAhh! Its a new High Score !");
+
                             TVhighscore.setTextColor(Color.WHITE);
                             Dashboard.setBackgroundResource(R.drawable.dashbordbg4sm);
                         }
@@ -469,6 +588,8 @@ public class MainActivity extends AppCompatActivity
                         TVhighscore.setText("High Score : "+score);
                         if(highScoreChangeDone){
                             TVhighscore.setTextColor(Color.WHITE);
+                            TVgirlMsg.setText("AAhh! u nailed it !");
+
                             Dashboard.setBackgroundResource(R.drawable.dashbordbg4sm);
                         }
                         highScoreChangeDone = true;

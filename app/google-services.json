@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1052346895889",
+    "firebase_url": "https://wargasm-f75a9.firebaseio.com",
+    "project_id": "wargasm-f75a9",
+    "storage_bucket": "wargasm-f75a9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1052346895889:android:011872c36f1db6cb",
+        "android_client_info": {
+          "package_name": "in.dsardy.pingerme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1052346895889-5vp6s4068japlhv5jqpgr5ojpsm5c7sf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChXBYLE6NnrRDg-a8DjMQabVvuAIOTTGY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
