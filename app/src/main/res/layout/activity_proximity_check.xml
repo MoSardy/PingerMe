@@ -71,7 +71,7 @@
         android:visibility="gone" />
 
     <TextView
-        android:text="NOTE : In some devices , the Proximity Sensor Responds slowly. If yours is one of them, Sorry you will not fully ejoy the gameplay . But you can check out other features ;) "
+        android:text="NOTE : In some devices , the Proximity Sensor Responds slowly. If yours is one of them, Sorry you will not fully enjoy the game play . But you can check out other features ;) "
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textViewpnwmsg"

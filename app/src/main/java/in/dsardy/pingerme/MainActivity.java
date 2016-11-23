@@ -11,6 +11,8 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -22,20 +24,25 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.ViewAnimator;
-
 
 import com.github.florent37.viewanimator.AnimationListener;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
+import com.google.example.games.basegameutils.BaseGameUtils;
+
 
 import rb.popview.PopField;
 
 import static android.R.drawable.ic_media_play;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,SensorEventListener {
+        implements NavigationView.OnNavigationItemSelectedListener,SensorEventListener, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,View.OnClickListener  {
 
     DrawerLayout drawer;
     ImageView girl;
@@ -49,6 +56,9 @@ public class MainActivity extends AppCompatActivity
     CountDownTimer ct,mct;
     int TimerValue;
     PopField popField;
+    private GoogleApiClient mGoogleApiClient;
+
+
 
 
 
@@ -79,27 +89,38 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Create the Google Api Client with access to the Play Games services
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Games.API).addScope(Games.SCOPE_GAMES)
+                // add other APIs and scopes here as needed
+                .build();
+
+
         //sharedpref setup
         sharedpreferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = sharedpreferences.edit();
 
-        if(sharedpreferences.getInt(isReg,0)==0){
+        /*if(sharedpreferences.getInt(isReg,0)==0){
             finish();
             startActivity(new Intent(this,Register.class));
-        }
+        }*/
 
         editor.putInt(gameType,0);
         editor.commit();
 
 
         isPlaying = false;
-        isGirlok = false;
+        isGirlok = true;
         highScoreChangeDone = false;
         TimerValue = 10;
 
 
         setContentView(R.layout.activity_main);
         popField = PopField.attach2Window(this);
+        findViewById(R.id.sign_in_button).setOnClickListener(this);
+
 
         //keep screen on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -112,6 +133,8 @@ public class MainActivity extends AppCompatActivity
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
         getUIref();
+
+
 
 
 
@@ -207,6 +230,7 @@ public class MainActivity extends AppCompatActivity
 
                                 TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore2,0));
                                 TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore2,0));
+                                Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIlcfg65YJEAIQAg",score);
                                 animateScore2();
 
                                 score=0;
@@ -253,6 +277,8 @@ public class MainActivity extends AppCompatActivity
 
 
 
+                                    Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIlcfg65YJEAIQAA",score);
+
                                     TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore,0));
                                     TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore,0));
 
@@ -267,6 +293,8 @@ public class MainActivity extends AppCompatActivity
                                     com.github.florent37.viewanimator.ViewAnimator.animate(fab2).fall().descelerate().duration(1500).start();
                                     com.github.florent37.viewanimator.ViewAnimator.animate(Girlmsg).flash().descelerate().duration(1000).start();
 
+
+                                    Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIlcfg65YJEAIQAQ",score);
 
                                     TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore1,0));
                                     TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore1,0));
@@ -308,7 +336,10 @@ public class MainActivity extends AppCompatActivity
                         editor.apply();
 
                         //score
+                        Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIlcfg65YJEAIQAA",score);
+
                         animateScore2();
+
 
                         score=0;
                         TVscore.setText("0.");
@@ -330,6 +361,8 @@ public class MainActivity extends AppCompatActivity
                         editor.apply();
 
                         //score
+                        Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIlcfg65YJEAIQAQ",score);
+
                         animateScore2();
                         score=0;
                         TVscore.setText("0.");
@@ -350,6 +383,8 @@ public class MainActivity extends AppCompatActivity
                         editor.apply();
 
                         //score
+                        Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIlcfg65YJEAIQAg",score);
+
                         score=0;
                         TVscore.setText("0.");
                         TVgirlMsg.setText("its ok! This is Real mans stuff :)");
@@ -375,6 +410,11 @@ public class MainActivity extends AppCompatActivity
 
 
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
 
     @Override
     protected void onResume() {
@@ -386,6 +426,11 @@ public class MainActivity extends AppCompatActivity
     protected void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this);
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mGoogleApiClient.disconnect();
     }
 
     private void getUIref() {
@@ -495,9 +540,20 @@ public class MainActivity extends AppCompatActivity
             editor.putInt(gameType,2).commit();
 
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_leaderboard) {
 
-        } else if (id == R.id.nav_share) {
+
+            if (isSignedIn()) {
+                startActivityForResult(Games.Leaderboards.getAllLeaderboardsIntent(mGoogleApiClient),
+                        100);
+            } else {
+                BaseGameUtils.makeSimpleDialog(this, getString(R.string.leaderboards_not_available)).show();
+            }
+
+
+
+        } else if (id == R.id.nav_manage) {
+            startActivity(new Intent(this,MapsActivity.class));
 
         } else if (id == R.id.nav_send) {
 
@@ -617,4 +673,76 @@ public class MainActivity extends AppCompatActivity
     public void onAccuracyChanged(Sensor sensor, int i) {
 
     }
+
+
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+        findViewById(R.id.sign_in_button).setVisibility(View.GONE);
+        //The player is signed in. Hide the sign-in button and allow the
+        // player to proceed.
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        // Attempt to reconnect
+        mGoogleApiClient.connect();
+    }
+
+    private static int RC_SIGN_IN = 9001;
+
+    private boolean mResolvingConnectionFailure = false;
+    private boolean mAutoStartSignInflow = true;
+    private boolean mSignInClicked = false;
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+        if (mResolvingConnectionFailure) {
+            // Already resolving
+            return;
+        }
+
+        // If the sign in button was clicked or if auto sign-in is enabled,
+        // launch the sign-in flow
+        if (mSignInClicked || mAutoStartSignInflow) {
+            mAutoStartSignInflow = false;
+            mSignInClicked = false;
+            mResolvingConnectionFailure = true;
+
+            // Attempt to resolve the connection failure using BaseGameUtils.
+            // The R.string.signin_other_error value should reference a generic
+            // error string in your strings.xml file, such as "There was
+            // an issue with sign in, please try again later."
+            if (!BaseGameUtils.resolveConnectionFailure(this,
+                    mGoogleApiClient, connectionResult,
+                    RC_SIGN_IN, getString(R.string.signin_other_error))) {
+                mResolvingConnectionFailure = false;
+            }
+        }
+
+        // Put code here to display the sign-in button
+
+
+        findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+
+
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        if (view.getId() == R.id.sign_in_button) {
+            // start the asynchronous sign in flow
+            mSignInClicked = true;
+            mGoogleApiClient.connect();
+        }
+
+    }
+    private boolean isSignedIn() {
+        return (mGoogleApiClient != null && mGoogleApiClient.isConnected());
+    }
+
+
 }

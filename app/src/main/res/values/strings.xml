@@ -8,4 +8,8 @@
     <string name="high_score_0">High Score : 0</string>
 
     <string name="facebook_app_id">1795040730709899</string>
+    <string name="app_id">315369202581</string>
+    <string name="signin_other_error">error1</string>
+    <string name="leaderboards_not_available">Please stay connected to see leaderboards!</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

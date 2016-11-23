@@ -46,7 +46,6 @@
                         android:ems="10"
                         android:id="@+id/editTextFirstName"
                         android:hint="Type Your Sweet Name"
-                        android:textColorHint="@color/common_action_bar_splitter"
                         android:fontFamily="sans-serif"
                         android:textColor="@color/colorPrimary"
                         android:background="@color/colorPrimaryDark"
@@ -69,7 +68,7 @@
                             android:id="@+id/editTextAge"
                             android:hint="Age? ( eg: 19 )"
                             android:layout_weight="5"
-                            android:textColorHint="@color/common_action_bar_splitter"
+                            android:textColorHint="@color/colorPrimary"
                             android:textStyle="normal|bold"
                             android:textColor="@color/colorPrimary"
                             android:background="@color/colorPrimaryDark"
@@ -121,7 +120,7 @@
                             android:id="@+id/editTextMobile"
                             android:hint="Enter Mobile Number"
                             android:layout_weight="2"
-                            android:textColorHint="@color/common_action_bar_splitter"
+                            android:textColorHint="@color/colorPrimary"
                             android:textStyle="normal|bold"
                             android:textColor="@color/colorPrimary"
                             android:background="@color/colorPrimaryDark"
@@ -169,7 +168,7 @@
                         android:padding="10dp"
                         android:textColor="@color/colorAccent"
                         android:textStyle="normal|bold|italic"
-                        android:textAlignment="textStart"
+
                         android:elevation="1dp" />
 
                     <LinearLayout
@@ -187,7 +186,7 @@
                             android:id="@+id/editTextOTP"
                             android:hint="Enter OTP here! "
                             android:layout_weight="2"
-                            android:textColorHint="@color/common_action_bar_splitter"
+                            android:textColorHint="@color/colorPrimary"
                             android:textStyle="normal|bold"
                             android:textColor="@color/colorPrimary"
                             android:background="@color/colorPrimaryDark"

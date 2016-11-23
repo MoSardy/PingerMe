@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -26,9 +27,11 @@ import com.github.florent37.viewanimator.ViewAnimator;
 import com.msg91.sendotp.library.SendOtpVerification;
 import com.msg91.sendotp.library.Verification;
 import com.msg91.sendotp.library.VerificationListener;
+import com.msg91.sendotp.library.internal.*;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 
 import swarajsaaj.smscodereader.interfaces.OTPListener;
 import swarajsaaj.smscodereader.receivers.OtpReader;
@@ -58,6 +61,10 @@ public class Register extends AppCompatActivity implements VerificationListener,
 
         sp = PreferenceManager.getDefaultSharedPreferences(this);
         ed = sp.edit();
+
+        printHashkey();
+
+
 
 
         sendOTP.setOnClickListener(new View.OnClickListener() {
@@ -116,9 +123,32 @@ public class Register extends AppCompatActivity implements VerificationListener,
 
     }
 
+    private void printHashkey() {
+
+        MessageDigest md = null;
+        try {
+            PackageInfo info = getApplication().getPackageManager().getPackageInfo(
+                    getApplication().getPackageName(),
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+        } catch (NoSuchAlgorithmException e) {
+
+        }
+        Log.e("SecretKey =====",Base64.encodeToString(md.digest(), Base64.DEFAULT));
+    }
+
     private void sendOTPnow(String mb) {
 
-        mVerification = SendOtpVerification.createSmsVerification(this,mb, this,"91");
+        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        String countryCode = tm.getSimCountryIso();
+        String prefix = com.msg91.sendotp.library.internal.Iso2Phone.getPhone(countryCode);
+
+        mVerification = SendOtpVerification.createSmsVerification(this,mb, this,prefix);
 
         mVerification.initiate(); //sending otp on given number
 
