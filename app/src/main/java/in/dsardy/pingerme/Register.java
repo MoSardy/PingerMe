@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.content.pm.Signature;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,12 +42,22 @@ import static in.dsardy.pingerme.MainActivity.isReg;
 public class Register extends AppCompatActivity implements VerificationListener,OTPListener{
 
     LinearLayout Enterdetails,OTPvarify;
-    EditText firstname , mobile , otp ;
+    EditText firstname , mobile , otp ,age;
     ImageButton sendOTP , varifyOTP;
     Verification mVerification;
     SharedPreferences.Editor ed;
     ProgressDialog progressDialog;
     TextView tvcmsg,tvomsg;
+    RadioButton m , f;
+
+    String fn,mb;
+
+    public static final String pName = "players_name";
+    public static final String pMobile = "players_mobile";
+    public static final String pGen = "gender";
+    public static final String pAge = "players_age";
+    public static final String pVisits = "visits";
+
 
 
     SharedPreferences sp;
@@ -79,7 +90,6 @@ public class Register extends AppCompatActivity implements VerificationListener,
                        InputMethodManager.HIDE_NOT_ALWAYS);
                //getdetails
 
-               String fn,mb;
                fn = firstname.getText().toString();
                mb = mobile.getText().toString();
                if(fn.isEmpty()||mb.isEmpty()){
@@ -148,7 +158,7 @@ public class Register extends AppCompatActivity implements VerificationListener,
         String countryCode = tm.getSimCountryIso();
         String prefix = com.msg91.sendotp.library.internal.Iso2Phone.getPhone(countryCode);
 
-        mVerification = SendOtpVerification.createSmsVerification(this,mb, this,prefix);
+        mVerification = SendOtpVerification.createSmsVerification(this,mb, this,"91");
 
         mVerification.initiate(); //sending otp on given number
 
@@ -164,6 +174,9 @@ public class Register extends AppCompatActivity implements VerificationListener,
         varifyOTP = (ImageButton)findViewById(R.id.imageButtonVarifyOtp);
         tvcmsg = (TextView)findViewById(R.id.textViewcmsg);
         tvomsg = (TextView)findViewById(R.id.textViewMsg);
+        age = (EditText)findViewById(R.id.editTextAge);
+        m = (RadioButton)findViewById(R.id.radioButtonMale);
+        f = (RadioButton)findViewById(R.id.radioButtonFemale);
     }
 
     @Override
@@ -192,7 +205,21 @@ public class Register extends AppCompatActivity implements VerificationListener,
 
         progressDialog.hide();
         ed.putInt(isReg,1);
+        ed.putString(pName,fn);
+        ed.putString(pMobile,mb);
+
+        if(f.isChecked()){
+            ed.putString(pGen,"Female");
+        }else{
+            ed.putString(pGen,"Male");
+
+        }
+
+        ed.putString(pAge,age.getText().toString());
+
         ed.commit();
+
+
         finish();
         startActivity(new Intent(this,ProximityCheck.class));
     }
@@ -205,11 +232,16 @@ public class Register extends AppCompatActivity implements VerificationListener,
     @Override
     public void otpReceived(String smsText) {
 
-        //Do whatever you want to do with the text
-        String timedOTP = smsText.substring(0,4);
-        otp.setText(timedOTP);
-        tvomsg.setText("Got it! press go to verify...");
-        ViewAnimator.animate(tvomsg).flash().descelerate().duration(500).thenAnimate(varifyOTP).pulse().accelerate().duration(1000).start();
+        if(sp.getInt(isReg,0)==0){
+            //Do whatever you want to do with the text
+            String timedOTP = smsText.substring(0,4);
+            otp.setText(timedOTP);
+            tvomsg.setText("Got it! press go to verify...");
+            ViewAnimator.animate(tvomsg).flash().descelerate().duration(500).thenAnimate(varifyOTP).pulse().accelerate().duration(1000).start();
+        }
+
+
+
 
 
     }

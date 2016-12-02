@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    android:background="@color/color_navigation_list_background">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.02"
+        tools:ignore="InefficientWeight,UselessParent">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/ll2"
+            android:padding="10dp"
+            android:weightSum="1">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/dashbordbg2"
+                android:layout_weight="0.5"
+                android:alpha="0.8">
+
+                <TextView
+                    android:text="TextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textViewabout"
+                    android:textStyle="normal|bold"
+                    android:padding="5dp"
+                    android:textColor="@color/colorPrimary"
+                    android:textAlignment="center"
+                    android:layout_marginTop="10dp" />
+
+                <TextView
+                    android:text="CP :"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textViewcp"
+                    android:textStyle="normal|bold"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="26sp" />
+
+                <TextView
+                    android:text="Note: a SMS will be sent to this wargasmer from you . You can attach a custom msg with it ( 20 letters limit) . Standard charges for sms will be applied !"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textViewnote"
+                    android:textStyle="normal|bold"
+                    android:textSize="10sp"
+                    android:paddingBottom="10dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_weight="0.5"
+            android:gravity="center_vertical"
+            android:layout_alignBottom="@+id/ll2"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="false">
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                app:fabSize="normal"
+                app:srcCompat="@drawable/ic_reply_black_24dp"
+                android:id="@+id/fabCancelmsg"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                app:fabSize="normal"
+                app:srcCompat="@drawable/ic_mail_black_24dp"
+                android:id="@+id/fabsendmsg"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:ems="10"
+        android:id="@+id/editTextcusmsg"
+        android:layout_weight="0.02"
+        android:background="@drawable/rounded_et"
+        android:padding="5dp"
+        android:layout_margin="5dp"
+        android:hint="Attach custom msg here ..."
+        android:textAlignment="center"
+        android:maxLength="30"
+        android:textSize="16sp" />
+
+</LinearLayout>

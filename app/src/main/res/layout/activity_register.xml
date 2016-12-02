@@ -25,10 +25,10 @@
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    app:srcCompat="@color/colorAccent"
+                    android:layout_height="300dp"
+                    app:srcCompat="@drawable/mymonstawst"
                     android:id="@+id/imageView"
-                    android:scaleType="fitStart" />
+                    android:scaleType="centerCrop" />
 
                 <LinearLayout
                     android:orientation="vertical"
@@ -44,6 +44,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="textPersonName"
                         android:ems="10"
+                        android:maxLength="10"
                         android:id="@+id/editTextFirstName"
                         android:hint="Type Your Sweet Name"
                         android:fontFamily="sans-serif"
@@ -52,7 +53,8 @@
                         android:layout_margin="5dp"
                         android:padding="5dp"
                         android:alpha="0.8"
-                        android:textStyle="normal|bold" />
+                        android:textStyle="normal|bold"
+                        android:textColorHint="@color/colorPrimary" />
 
                     <LinearLayout
                         android:orientation="horizontal"

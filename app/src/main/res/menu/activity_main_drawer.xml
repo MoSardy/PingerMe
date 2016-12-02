@@ -21,7 +21,7 @@
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_person_pin_circle_black_24dp"
-            android:title="meet Strangers" />
+            android:title="Wargasmers Go" />
     </group>
     <item>
         <menu>
@@ -31,17 +31,10 @@
                 android:title="How To Play" />
 
             <item
-                android:id="@+id/nav_reg"
-                android:icon="@drawable/ic_person_black_24dp"
-                android:title="Your Account" />
-            <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share Score" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send Game" />
+                android:title="Share App" />
+
             <item
                 android:id="@+id/nav_about"
                 android:icon="@drawable/ic_info_black_24dp"

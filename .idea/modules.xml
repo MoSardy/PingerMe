@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/BaseGameUtils/BaseGameUtils.iml" filepath="$PROJECT_DIR$/BaseGameUtils/BaseGameUtils.iml" />
       <module fileurl="file://$PROJECT_DIR$/PingerMe.iml" filepath="$PROJECT_DIR$/PingerMe.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/loclibrary/loclibrary.iml" filepath="$PROJECT_DIR$/loclibrary/loclibrary.iml" />
     </modules>
   </component>
 </project>

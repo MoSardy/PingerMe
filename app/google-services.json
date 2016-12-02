@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "315369202581",
-    "firebase_url": "https://wargasm-76755493.firebaseio.com",
-    "project_id": "wargasm-76755493",
-    "storage_bucket": "wargasm-76755493.appspot.com"
+    "project_number": "261598061641",
+    "firebase_url": "https://wargasmm-87158985.firebaseio.com",
+    "project_id": "wargasmm-87158985",
+    "storage_bucket": "wargasmm-87158985.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:315369202581:android:011872c36f1db6cb",
+        "mobilesdk_app_id": "1:261598061641:android:011872c36f1db6cb",
         "android_client_info": {
           "package_name": "in.dsardy.pingerme"
         }
       },
       "oauth_client": [
         {
-          "client_id": "315369202581-95funu9sjf5l8nu08devf4okqtmhbosi.apps.googleusercontent.com",
+          "client_id": "261598061641-ddfne3u8i9on3e7hhojb6gneprbouud6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "in.dsardy.pingerme",
@@ -23,13 +23,13 @@
           }
         },
         {
-          "client_id": "315369202581-cg0920r71edn27mcbugp5jfpnst9kt8t.apps.googleusercontent.com",
+          "client_id": "261598061641-shobpatndkfavtgt320nqaubsdg4bhmf.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBJ5-b_WoZKjO1Hvyb1WDMJpQ4UcxwCqtc"
+          "current_key": "AIzaSyBvCvp1vZXLHhhkbT-u6aowAvBkKB-4v7k"
         }
       ],
       "services": {
@@ -40,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "315369202581-cg0920r71edn27mcbugp5jfpnst9kt8t.apps.googleusercontent.com",
+              "client_id": "261598061641-shobpatndkfavtgt320nqaubsdg4bhmf.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

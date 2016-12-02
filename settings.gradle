@@ -1,1 +1,1 @@
-include ':app', ':BaseGameUtils', ':loclibrary'
+include ':app', ':BaseGameUtils'

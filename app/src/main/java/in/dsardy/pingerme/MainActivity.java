@@ -2,6 +2,7 @@ package in.dsardy.pingerme;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -19,6 +20,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -30,25 +32,39 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.florent37.viewanimator.AnimationListener;
+import com.github.florent37.viewanimator.ViewAnimator;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.ErrorDialogFragment;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.example.games.basegameutils.BaseGameUtils;
+import com.vungle.publisher.VunglePub;
 
 
 import rb.popview.PopField;
 
 import static android.R.drawable.ic_media_play;
+import static in.dsardy.pingerme.ApplicationClass.userloc;
+import static in.dsardy.pingerme.Register.pMobile;
+import static in.dsardy.pingerme.Register.pName;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,SensorEventListener, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,View.OnClickListener  {
+        GoogleApiClient.OnConnectionFailedListener,View.OnClickListener,RewardedVideoAdListener {
 
     DrawerLayout drawer;
     ImageView girl;
     FloatingActionButton fab,fab2;
     LinearLayout Dashboard,Girlmsg;
-    TextView TVtimeLeft,TVgirlMsg , TVscore, TVhighscore , TVlastscore, TVscore2;
+    TextView TVtimeLeft,TVgirlMsg , TVscore, TVhighscore , TVlastscore, TVscore2,TVyoname,TVyomb,TVplayAd;
     Boolean isPlaying,isGirlok,highScoreChangeDone,ya;
     private SensorManager mSensorManager;
     private Sensor mSensor;
@@ -57,6 +73,24 @@ public class MainActivity extends AppCompatActivity
     int TimerValue;
     PopField popField;
     private GoogleApiClient mGoogleApiClient;
+    ImageView rotatingLOGO;
+
+    private RewardedVideoAd rewardedVideoAd;
+    InterstitialAd mInterstitialAd;
+    // get the VunglePub instance
+    final VunglePub vunglePub = VunglePub.getInstance();
+
+
+
+    // Request code to use when launching the resolution activity
+    private static final int REQUEST_RESOLVE_ERROR = 1001;
+    // Unique tag for the error dialog fragment
+    private static final String DIALOG_ERROR = "dialog_error";
+    // Bool to track whether the app is already resolving an error
+    private boolean mResolvingError = false;
+    public static final String STATE_RESOLVING_ERROR = "resolving_state";
+    //Request code to use when launching the activity to fix the connection to google API
+    private static final int REQUEST_SOLVE_CONNEXION = 999;
 
 
 
@@ -90,22 +124,32 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         // Create the Google Api Client with access to the Play Games services
+
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
-                // add other APIs and scopes here as needed
+                .setViewForPopups(findViewById(android.R.id.content))
                 .build();
+
+
+
+
+
+
+
+
 
 
         //sharedpref setup
         sharedpreferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = sharedpreferences.edit();
 
-        /*if(sharedpreferences.getInt(isReg,0)==0){
+        if(sharedpreferences.getInt(isReg,0)==0){
             finish();
             startActivity(new Intent(this,Register.class));
-        }*/
+        }
 
         editor.putInt(gameType,0);
         editor.commit();
@@ -118,6 +162,8 @@ public class MainActivity extends AppCompatActivity
 
 
         setContentView(R.layout.activity_main);
+
+
         popField = PopField.attach2Window(this);
         findViewById(R.id.sign_in_button).setOnClickListener(this);
 
@@ -133,6 +179,42 @@ public class MainActivity extends AppCompatActivity
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
         getUIref();
+
+        //initialize admob banner
+
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3922710053471966~6702676138");
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest;
+        adRequest = new AdRequest.Builder().addTestDevice("C046ECE47FD2AF40C0FE7CF1D02EF7A2").setLocation(userloc).build();
+        mAdView.loadAd(adRequest);
+
+        //video ad
+
+        rewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        rewardedVideoAd.setRewardedVideoAdListener(this);
+        loadVideoAd();
+
+        TVplayAd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(rewardedVideoAd.isLoaded()){
+                    rewardedVideoAd.show();
+                }
+            }
+        });
+        vunglePub.init(this,"583f68f84beff6147e000456");
+
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3922710053471966/8155729737");
+        requestNewInterstitial();
+
+
+
+
+
+
+
 
 
 
@@ -156,6 +238,14 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        Girlmsg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(vunglePub.isAdPlayable())
+                    vunglePub.playAd();
+            }
+        });
+
 
 
         TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore,0));
@@ -174,6 +264,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 drawer.openDrawer(GravityCompat.START);
+                ViewAnimator.animate(rotatingLOGO).shake().descelerate().duration(1000).start();
 
             }
         });
@@ -184,6 +275,8 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
 
 
                 if(isPlaying==false){
@@ -230,7 +323,13 @@ public class MainActivity extends AppCompatActivity
 
                                 TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore2,0));
                                 TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore2,0));
-                                Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIlcfg65YJEAIQAg",score);
+
+                                if(isSignedIn()){
+
+                                    Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIycjWw84HEAIQAw",score);
+
+                                }
+
                                 animateScore2();
 
                                 score=0;
@@ -277,7 +376,10 @@ public class MainActivity extends AppCompatActivity
 
 
 
-                                    Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIlcfg65YJEAIQAA",score);
+                                    if(isSignedIn()){
+                                        Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIycjWw84HEAIQAQ",score);
+                                    }
+
 
                                     TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore,0));
                                     TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore,0));
@@ -293,8 +395,12 @@ public class MainActivity extends AppCompatActivity
                                     com.github.florent37.viewanimator.ViewAnimator.animate(fab2).fall().descelerate().duration(1500).start();
                                     com.github.florent37.viewanimator.ViewAnimator.animate(Girlmsg).flash().descelerate().duration(1000).start();
 
+                                    if(isSignedIn()){
+                                        Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIycjWw84HEAIQAg",score);
 
-                                    Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIlcfg65YJEAIQAQ",score);
+                                    }
+
+
 
                                     TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore1,0));
                                     TVhighscore.setText("High Score : "+sharedpreferences.getInt(highScore1,0));
@@ -336,7 +442,10 @@ public class MainActivity extends AppCompatActivity
                         editor.apply();
 
                         //score
-                        Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIlcfg65YJEAIQAA",score);
+                        if(isSignedIn()){
+                            Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIycjWw84HEAIQAQ",score);
+                        }
+
 
                         animateScore2();
 
@@ -361,7 +470,11 @@ public class MainActivity extends AppCompatActivity
                         editor.apply();
 
                         //score
-                        Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIlcfg65YJEAIQAQ",score);
+                        if(isSignedIn()){
+                            Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIycjWw84HEAIQAg",score);
+
+                        }
+
 
                         animateScore2();
                         score=0;
@@ -383,7 +496,10 @@ public class MainActivity extends AppCompatActivity
                         editor.apply();
 
                         //score
-                        Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIlcfg65YJEAIQAg",score);
+                        if(isSignedIn()){
+                            Games.Leaderboards.submitScore(mGoogleApiClient,"CgkIycjWw84HEAIQAw",score);
+                        }
+
 
                         score=0;
                         TVscore.setText("0.");
@@ -404,8 +520,30 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View header=navigationView.getHeaderView(0);
+        /*View view=navigationView.inflateHeaderView(R.layout.nav_header_main);*/
+        TVyoname= (TextView)header.findViewById(R.id.textViewyoname);
+        TVyomb = (TextView)header.findViewById(R.id.textViewypmb);
+        rotatingLOGO = (ImageView)header.findViewById(R.id.imageViewlogo);
+        TVyoname.setText("@"+sharedpreferences.getString(pName,"user"));
+        TVyomb.setText(sharedpreferences.getString(pMobile,"9XXXXXXXXX"));
     }
 
+
+    public  void loadVideoAd(){
+        if(!rewardedVideoAd.isLoaded()){
+            rewardedVideoAd.loadAd("ca-app-pub-3922710053471966/4109136530",new AdRequest.Builder().addTestDevice("C046ECE47FD2AF40C0FE7CF1D02EF7A2").build());
+        }
+    }
+
+    private void requestNewInterstitial() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("C046ECE47FD2AF40C0FE7CF1D02EF7A2")
+                .build();
+
+        mInterstitialAd.loadAd(adRequest);
+    }
 
 
 
@@ -413,6 +551,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
+
         mGoogleApiClient.connect();
     }
 
@@ -447,6 +586,8 @@ public class MainActivity extends AppCompatActivity
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab2 = (FloatingActionButton) findViewById(R.id.fab2);
         Girlmsg = (LinearLayout)findViewById(R.id.llGirlmsg);
+        TVplayAd = (TextView)findViewById(R.id.textViewplayAd);
+
 
 
 
@@ -512,6 +653,10 @@ public class MainActivity extends AppCompatActivity
             editor.putInt(gameType,0).commit();
             TVgirlMsg.setText("Check LeaderBoard!");
 
+            if (mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+            }
+
 
         } else if (id == R.id.nav_gallery) {
             TVlastscore.setText("Last Score : "+sharedpreferences.getInt(lastScore1,0));
@@ -523,6 +668,10 @@ public class MainActivity extends AppCompatActivity
             highScoreChangeDone = false;
             editor.putInt(gameType,1).commit();
             TVgirlMsg.setText("Challenge a friend ! its fun ;)");
+
+            if (mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+            }
 
 
 
@@ -539,13 +688,16 @@ public class MainActivity extends AppCompatActivity
 
             editor.putInt(gameType,2).commit();
 
+            if (mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+            }
+
 
         } else if (id == R.id.nav_leaderboard) {
 
 
             if (isSignedIn()) {
-                startActivityForResult(Games.Leaderboards.getAllLeaderboardsIntent(mGoogleApiClient),
-                        100);
+                startActivityForResult(Games.Leaderboards.getAllLeaderboardsIntent(mGoogleApiClient),100);
             } else {
                 BaseGameUtils.makeSimpleDialog(this, getString(R.string.leaderboards_not_available)).show();
             }
@@ -555,7 +707,24 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_manage) {
             startActivity(new Intent(this,MapsActivity.class));
 
-        } else if (id == R.id.nav_send) {
+            if (mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+            }
+
+        } else if (id == R.id.nav_howto) {
+            startActivity(new Intent(this,HowtoPlayActivity.class));
+
+            if (mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+            }
+
+        }else if (id == R.id.nav_about) {
+
+            startActivity(new Intent(this,InfoActivity.class));
+
+            if (mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+            }
 
         }
 
@@ -680,6 +849,9 @@ public class MainActivity extends AppCompatActivity
     public void onConnected(@Nullable Bundle bundle) {
 
         findViewById(R.id.sign_in_button).setVisibility(View.GONE);
+        Games.setViewForPopups(mGoogleApiClient, getWindow().getDecorView().findViewById(android.R.id.content));
+
+        Log.e(" connrcted>>>>>>"," hmmmm");
         //The player is signed in. Hide the sign-in button and allow the
         // player to proceed.
     }
@@ -728,6 +900,25 @@ public class MainActivity extends AppCompatActivity
         findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
 
 
+        if (mResolvingError) {
+            // Already attempting to resolve an error.
+            return;
+        } else if (connectionResult.hasResolution()) {
+            try {
+                mResolvingError = true;
+                connectionResult.startResolutionForResult(this, REQUEST_RESOLVE_ERROR);
+            } catch (IntentSender.SendIntentException e) {
+                // There was an error with the resolution intent. Try again.
+                mGoogleApiClient.connect();
+            }
+        } else {
+            // Show dialog using GooglePlayServicesUtil.getErrorDialog()
+            showErrorDialog(connectionResult.getErrorCode());
+            mResolvingError = true;
+        }
+
+
+
     }
 
     @Override
@@ -737,6 +928,7 @@ public class MainActivity extends AppCompatActivity
             // start the asynchronous sign in flow
             mSignInClicked = true;
             mGoogleApiClient.connect();
+
         }
 
     }
@@ -744,5 +936,77 @@ public class MainActivity extends AppCompatActivity
         return (mGoogleApiClient != null && mGoogleApiClient.isConnected());
     }
 
+    private void showErrorDialog(int errorCode) {
+        // Create a fragment for the error dialog
+        ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
+        // Pass the error that should be displayed
+        Bundle args = new Bundle();
+        args.putInt(DIALOG_ERROR, errorCode);
+        dialogFragment.setArguments(args);
+        dialogFragment.show(getFragmentManager(), "errordialog");
+    }
 
+    /* Called from ErrorDialogFragment when the dialog is dismissed. */
+    public void onDialogDismissed() {
+        mResolvingError = false;
+    }
+
+
+    @Override
+    public void onRewardedVideoAdLoaded() {
+
+        TVplayAd.setVisibility(View.VISIBLE);
+        ViewAnimator.animate(TVplayAd).flash().descelerate().duration(1000).start();
+
+    }
+
+    @Override
+    public void onRewardedVideoAdOpened() {
+
+    }
+
+    @Override
+    public void onRewardedVideoStarted() {
+
+
+    }
+
+    @Override
+    public void onRewardedVideoAdClosed() {
+        TVgirlMsg.setText("No Reward! watch it all...");
+    }
+
+    @Override
+    public void onRewarded(RewardItem rewardItem) {
+
+        TVgirlMsg.setText("You are rewarded!");
+        ViewAnimator.animate(Girlmsg).tada().descelerate().duration(1000).start();
+        switch (sharedpreferences.getInt(gameType,0)){
+            case 0:{
+                score = sharedpreferences.getInt(lastScore,0);
+                TVscore.setText(""+score+".");
+            }
+            case 1:{
+                score = sharedpreferences.getInt(lastScore1,1);
+                TVscore.setText(""+score+".");
+            }
+            case 2:{
+                score = sharedpreferences.getInt(lastScore2,2);
+                TVscore.setText(""+score+".");
+            }
+        }
+
+        TVplayAd.setVisibility(View.GONE);
+
+    }
+
+    @Override
+    public void onRewardedVideoAdLeftApplication() {
+
+    }
+
+    @Override
+    public void onRewardedVideoAdFailedToLoad(int i) {
+
+    }
 }
