@@ -26,7 +26,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -43,13 +42,10 @@ import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.ErrorDialogFragment;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.example.games.basegameutils.BaseGameUtils;
-import com.vungle.publisher.EventListener;
 import com.vungle.publisher.VunglePub;
-
 
 import rb.popview.PopField;
 
@@ -129,7 +125,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.splash);
+
         // Create the Google Api Client with access to the Play Games services
 
 
@@ -261,7 +257,7 @@ public class MainActivity extends AppCompatActivity
 
                 if(motionEvent.getAction()== MotionEvent.ACTION_DOWN){
                     girl.setImageResource(R.drawable.pphappysm2);
-                    TVgirlMsg.setText("I love you too :)");
+                    TVgirlMsg.setText("love you too :)");
 
                 }
                 if(motionEvent.getAction()==MotionEvent.ACTION_UP){
@@ -407,7 +403,7 @@ public class MainActivity extends AppCompatActivity
                                     }
                                     editor.apply();
                                     TVscore.setText("0.");
-                                    TVgirlMsg.setText("Try Hard next time !");
+                                    TVgirlMsg.setText("Try Harder next time !");
 
                                     com.github.florent37.viewanimator.ViewAnimator.animate(Girlmsg).flash().descelerate().duration(1000).start();
                                     com.github.florent37.viewanimator.ViewAnimator.animate(fab2).fall().descelerate().duration(2000).start();

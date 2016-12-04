@@ -169,7 +169,7 @@
         </RelativeLayout>
 
         <TextView
-            android:text="Click here to continue with Last Score! (Video Ad)"
+            android:text="Tap here to continue with Last Score! (Video Ad)"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/textViewplayAd"
@@ -177,7 +177,8 @@
             android:textColor="@color/colorPrimary"
             android:textAlignment="center"
             android:padding="5dp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:alpha="0.9" />
 
     </LinearLayout>
 

@@ -53,7 +53,7 @@
                     android:textSize="26sp" />
 
                 <TextView
-                    android:text="Note: a SMS will be sent to this wargasmer from you . You can attach a custom msg with it ( 20 letters limit) . Standard charges for sms will be applied !"
+                    android:text="Note: a SMS will be sent to this FingerBro from you . You can attach a custom msg with it ( 20 letters limit) . Standard charges for sms will be applied !"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/textViewnote"

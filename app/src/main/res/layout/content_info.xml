@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/text_margin"
-            android:text='"Feel free to offer me an internship , if you dont mind please rate the game"' />
+            android:text='"Feel free to offer me an internship , if you dont mind please rate the game. You have any crazy idea about proximity sensor related stuff? we can work on it together! "' />
 
         <TextView
             android:text="shubhamsardar07@gmail.com /8394876737"
