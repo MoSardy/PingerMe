@@ -1,13 +1,18 @@
-
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="in.dsardy.pingerme.MapsActivity">
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+
     android:id="@+id/map"
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="in.dsardy.pingerme.MapsActivity" >
+     >
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbarmap"
         android:layout_width="match_parent"
@@ -16,14 +21,20 @@
 
     </android.support.v7.widget.Toolbar>
 
+
+
+
+
+</fragment>
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-3922710053471966/4783460933">
+        ads:adUnitId="ca-app-pub-3922710053471966/4783460933"
+        android:clipToPadding="false"
+        android:layout_alignParentBottom="false"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="?attr/actionBarSize">
     </com.google.android.gms.ads.AdView>
-
-
-
-</fragment>
+</RelativeLayout>

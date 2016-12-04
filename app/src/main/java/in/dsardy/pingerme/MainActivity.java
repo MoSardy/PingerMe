@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.codemybrainsout.ratingdialog.RatingDialog;
 import com.github.florent37.viewanimator.AnimationListener;
 import com.github.florent37.viewanimator.ViewAnimator;
 import com.google.android.gms.ads.AdRequest;
@@ -46,6 +47,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.example.games.basegameutils.BaseGameUtils;
+import com.vungle.publisher.EventListener;
 import com.vungle.publisher.VunglePub;
 
 
@@ -58,7 +60,7 @@ import static in.dsardy.pingerme.Register.pName;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,SensorEventListener, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,View.OnClickListener,RewardedVideoAdListener {
+        GoogleApiClient.OnConnectionFailedListener,View.OnClickListener,RewardedVideoAdListener{
 
     DrawerLayout drawer;
     ImageView girl;
@@ -74,6 +76,10 @@ public class MainActivity extends AppCompatActivity
     PopField popField;
     private GoogleApiClient mGoogleApiClient;
     ImageView rotatingLOGO;
+    AdView mAdView;
+    public static RatingDialog ratingDialog;
+
+
 
     private RewardedVideoAd rewardedVideoAd;
     InterstitialAd mInterstitialAd;
@@ -123,6 +129,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.splash);
         // Create the Google Api Client with access to the Play Games services
 
 
@@ -137,16 +144,11 @@ public class MainActivity extends AppCompatActivity
 
 
 
-
-
-
-
-
         //sharedpref setup
         sharedpreferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = sharedpreferences.edit();
 
-        if(sharedpreferences.getInt(isReg,0)==0){
+        if(sharedpreferences.getInt(isReg,0)==0&&sharedpreferences.getInt("isskiped",0)==0){
             finish();
             startActivity(new Intent(this,Register.class));
         }
@@ -162,6 +164,33 @@ public class MainActivity extends AppCompatActivity
 
 
         setContentView(R.layout.activity_main);
+
+        ratingDialog = new RatingDialog.Builder(this)
+                .threshold(3)
+                .title("How much will you rate this game?")
+                .titleTextColor(R.color.black)
+                .positiveButtonText("Not Now")
+                .positiveButtonTextColor(R.color.white)
+                .negativeButtonTextColor(R.color.grey_500)
+                .formTitle("Submit Feedback")
+                .formHint("Tell us where we can improve")
+                .formSubmitText("Submit")
+                .formCancelText("Cancel")
+                .ratingBarColor(R.color.colorAccent)
+                .positiveButtonBackgroundColor(R.color.colorAccent)
+                .negativeButtonBackgroundColor(R.color.colorAccent)
+                .onRatingChanged(new RatingDialog.RatingDialogListener() {
+                    @Override
+                    public void onRatingSelected(float rating, boolean thresholdCleared) {
+
+                    }
+                })
+                .onRatingBarFormSumbit(new RatingDialog.RatingDialogFormListener() {
+                    @Override
+                    public void onFormSubmitted(String feedback) {
+
+                    }
+                }).build();
 
 
         popField = PopField.attach2Window(this);
@@ -183,10 +212,8 @@ public class MainActivity extends AppCompatActivity
         //initialize admob banner
 
         MobileAds.initialize(getApplicationContext(), "ca-app-pub-3922710053471966~6702676138");
-        AdView mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest;
-        adRequest = new AdRequest.Builder().addTestDevice("C046ECE47FD2AF40C0FE7CF1D02EF7A2").setLocation(userloc).build();
-        mAdView.loadAd(adRequest);
+        mAdView = (AdView) findViewById(R.id.adView);
+
 
         //video ad
 
@@ -199,6 +226,15 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 if(rewardedVideoAd.isLoaded()){
                     rewardedVideoAd.show();
+                }else {
+                    if(vunglePub.isAdPlayable()){
+                        vunglePub.playAd();
+                        TVplayAd.setVisibility(View.GONE);
+                        scoreReward();
+
+
+                    }
+
                 }
             }
         });
@@ -207,7 +243,6 @@ public class MainActivity extends AppCompatActivity
 
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId("ca-app-pub-3922710053471966/8155729737");
-        requestNewInterstitial();
 
 
 
@@ -275,6 +310,10 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if(vunglePub.isAdPlayable()){
+                    TVplayAd.setVisibility(View.VISIBLE);
+                }
 
 
 
@@ -528,6 +567,45 @@ public class MainActivity extends AppCompatActivity
         rotatingLOGO = (ImageView)header.findViewById(R.id.imageViewlogo);
         TVyoname.setText("@"+sharedpreferences.getString(pName,"user"));
         TVyomb.setText(sharedpreferences.getString(pMobile,"9XXXXXXXXX"));
+
+        TVyoname.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(sharedpreferences.getInt(isReg,0)!=1)
+                startActivity(new Intent(MainActivity.this,Register.class));
+            }
+        });
+    }
+
+    private void scoreReward() {
+
+        TVgirlMsg.setText("You are rewarded!");
+
+        switch (sharedpreferences.getInt(gameType,0)){
+            case 0:{
+                score = sharedpreferences.getInt(lastScore,0);
+                TVscore.setText(""+score+".");
+                Log.e("Score........0."," lets seee");
+                break;
+            }
+            case 1:{
+                score = sharedpreferences.getInt(lastScore1,1);
+                TVscore.setText(""+score+".");
+                Log.e("Score........1."," lets seee");
+
+                break;
+            }
+            case 2:{
+                score = sharedpreferences.getInt(lastScore2,2);
+                TVscore.setText(""+score+".");
+                Log.e("Score........2."," lets seee");
+
+                break;
+            }
+        }
+        ViewAnimator.animate(Girlmsg).tada().descelerate().duration(1000).start();
+
+        TVplayAd.setVisibility(View.GONE);
     }
 
 
@@ -559,12 +637,21 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         mSensorManager.registerListener(this,mSensor,SensorManager.SENSOR_DELAY_NORMAL);
+
+        AdRequest adRequest;
+        adRequest = new AdRequest.Builder().addTestDevice("C046ECE47FD2AF40C0FE7CF1D02EF7A2").setLocation(userloc).build();
+        mAdView.loadAd(adRequest);
+
+        requestNewInterstitial();
+        vunglePub.onResume();
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this);
+        vunglePub.onPause();
     }
     @Override
     protected void onStop() {
@@ -651,6 +738,8 @@ public class MainActivity extends AppCompatActivity
             com.github.florent37.viewanimator.ViewAnimator.animate(TVtimeLeft).tada().duration(1000).start();
             highScoreChangeDone = false;
             editor.putInt(gameType,0).commit();
+            score=0;
+            TVscore.setText("0.");
             TVgirlMsg.setText("Check LeaderBoard!");
 
             if (mInterstitialAd.isLoaded()) {
@@ -667,6 +756,8 @@ public class MainActivity extends AppCompatActivity
 
             highScoreChangeDone = false;
             editor.putInt(gameType,1).commit();
+            score=0;
+            TVscore.setText("0.");
             TVgirlMsg.setText("Challenge a friend ! its fun ;)");
 
             if (mInterstitialAd.isLoaded()) {
@@ -687,6 +778,8 @@ public class MainActivity extends AppCompatActivity
 
 
             editor.putInt(gameType,2).commit();
+            score=0;
+            TVscore.setText("0.");
 
             if (mInterstitialAd.isLoaded()) {
                 mInterstitialAd.show();
@@ -725,6 +818,11 @@ public class MainActivity extends AppCompatActivity
             if (mInterstitialAd.isLoaded()) {
                 mInterstitialAd.show();
             }
+
+        }else if (id == R.id.nav_rate) {
+
+            ratingDialog.show();
+
 
         }
 
@@ -979,24 +1077,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onRewarded(RewardItem rewardItem) {
 
-        TVgirlMsg.setText("You are rewarded!");
-        ViewAnimator.animate(Girlmsg).tada().descelerate().duration(1000).start();
-        switch (sharedpreferences.getInt(gameType,0)){
-            case 0:{
-                score = sharedpreferences.getInt(lastScore,0);
-                TVscore.setText(""+score+".");
-            }
-            case 1:{
-                score = sharedpreferences.getInt(lastScore1,1);
-                TVscore.setText(""+score+".");
-            }
-            case 2:{
-                score = sharedpreferences.getInt(lastScore2,2);
-                TVscore.setText(""+score+".");
-            }
-        }
-
-        TVplayAd.setVisibility(View.GONE);
+        scoreReward();
 
     }
 

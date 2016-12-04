@@ -61,6 +61,7 @@ import static in.dsardy.pingerme.ApplicationClass.REQUEST_CHECK_SETTINGS;
 import static in.dsardy.pingerme.ApplicationClass.mGoogleApiClient;
 import static in.dsardy.pingerme.ApplicationClass.mLocationRequest;
 import static in.dsardy.pingerme.ApplicationClass.userloc;
+import static in.dsardy.pingerme.MainActivity.isReg;
 import static in.dsardy.pingerme.Register.pGen;
 import static in.dsardy.pingerme.Register.pName;
 
@@ -209,6 +210,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
 
         mMap = googleMap;
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if(spm.getInt(isReg,0)==0){
+                    finish();
+                    startActivity(new Intent(MapsActivity.this,Register.class));
+                }
+            }
+        });
 
         childEventListener = new ChildEventListener() {
             @Override

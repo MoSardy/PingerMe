@@ -14,6 +14,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -49,6 +50,7 @@ public class Register extends AppCompatActivity implements VerificationListener,
     ProgressDialog progressDialog;
     TextView tvcmsg,tvomsg;
     RadioButton m , f;
+    Button skip;
 
     String fn,mb;
 
@@ -75,12 +77,24 @@ public class Register extends AppCompatActivity implements VerificationListener,
 
         printHashkey();
 
+        skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ed.putInt(isReg,0);
+                ed.putInt("isskiped",1);
+                ed.commit();
+                finish();
+                startActivity(new Intent(Register.this,ProximityCheck.class));
+            }
+        });
 
 
 
         sendOTP.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
+
+               skip.setVisibility(View.VISIBLE);
 
                //hide key board
                InputMethodManager inputManager = (InputMethodManager)
@@ -177,6 +191,7 @@ public class Register extends AppCompatActivity implements VerificationListener,
         age = (EditText)findViewById(R.id.editTextAge);
         m = (RadioButton)findViewById(R.id.radioButtonMale);
         f = (RadioButton)findViewById(R.id.radioButtonFemale);
+        skip = (Button)findViewById(R.id.buttonskip);
     }
 
     @Override
